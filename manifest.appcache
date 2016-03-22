@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# v<buildno></buildno>
+
+# Explicitly cached 'master entries'.
+CACHE:
+/js/app.js
+/css/app.css
+
+NETWORK:
+*
+
+FALLBACK:
