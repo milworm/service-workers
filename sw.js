@@ -11,7 +11,9 @@ self.addEventListener('install', function(e) {
     ]);
   }).then(function() {
     console.log('installed.')
-  });
+  }).then(function() {
+    return self.skipWaiting();
+  })
 
   e.waitUntil(result);
 });
@@ -27,6 +29,8 @@ self.addEventListener('activate', function(e) {
     });
   }).then(function(promises) {
     return Promise.all(promises);
+  }).then(function() {
+    return self.clients.claim();
   });
 
   e.waitUntil(result);
