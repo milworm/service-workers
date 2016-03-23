@@ -1,15 +1,16 @@
-var VERSION = '<buildno></buildno>', 
-  CACHE_NAME = 'cache_' + VERSION,
-  CACHED_URLS = [
-    '/',
-    '/index.html',
-    '/js/app.js?build=' + VERSION,
-    '/css/app.css?build=' + VERSION
-  ];
-
 self.addEventListener('install', function(e) {
-  var result = caches.open(CACHE_NAME).then(function(cache) {
-    return cache.addAll(CACHED_URLS);
+  var version = '<buildno></buildno>',
+    cacheName = 'cache_' + version,
+    urls = [
+      '/',
+      '/index.html',
+      '/js/app.js?build=' + version,
+      '/css/app.css?build=' + version
+    ],
+    result;
+
+  result = caches.open(cacheName).then(function(cache) {
+    return cache.addAll(urls);
   }).then(function() {
     console.log('installed.')
   });
@@ -17,8 +18,27 @@ self.addEventListener('install', function(e) {
   e.waitUntil(result);
 });
 
+self.addEventListener('activate', function(e) {
+  var cacheName = 'cache_<buildno></buildno>',
+    result;
+
+  result = caches.keys().then(function(keys) {
+    return keys.map(function(name) {
+      if(name != cacheName)
+        return caches.delete(name);
+    });
+  }).then(function(promises) {
+    return Promise.all(promises);
+  });
+
+  e.waitUntil(result);
+});
+
 self.addEventListener('fetch', function(e) {
-  var result = caches.open(CACHE_NAME).then(function(cache) {
+  var cacheName = 'cache_<buildno></buildno>',
+    result;
+
+  result = caches.open(cacheName).then(function(cache) {
     return cache.match(e.request);
   }).then(function(response) {
     if(response)
