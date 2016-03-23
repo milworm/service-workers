@@ -9,8 +9,21 @@
     <script src="/js/app.js"></script>
     <script>
       navigator.serviceWorker.register('/sw.js').then(function(result) {
-
+        console.log(result);
+        localStorage.setItem('sw_version', '<buildno></buildno>');
       });
+
+      window.onbeforeunload = function() {
+        var swVersion = '<buildno></buildno>';
+
+        if(localStorage.getItem('sw_version') == swVersion)
+            return ;
+
+        navigator.serviceWorker.unregister('/sw.js').then(function(result) {
+            console.log(result);
+            localStorage.setItem('sw_version', null);
+        });
+      }
     </script>
 </head>
 <body>
