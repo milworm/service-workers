@@ -1,3 +1,3 @@
 window.onload = function() {
-    document.body.innerHTML = window.location.href;
+    document.body.innerHTML = document.querySelector('script').src;
 }
