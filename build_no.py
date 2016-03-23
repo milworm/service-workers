@@ -22,7 +22,8 @@ open(build_file_path, 'w').write(version)
 html_files = [
     '/manifest.appcache',
     '/index.html', 
-    '/index.sw.html'
+    '/index.sw.html',
+    '/sw.js'
 ]
 
 for name in html_files:
