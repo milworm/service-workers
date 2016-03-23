@@ -1,16 +1,14 @@
 self.addEventListener('install', function(e) {
-  var version = '<buildno></buildno>',
-    cacheName = 'cache_' + version,
-    urls = [
-      '/',
-      '/index.html',
-      '/js/app.js?build=' + version,
-      '/css/app.css?build=' + version
-    ],
+  var cacheName = 'cache_<buildno></buildno>',
     result;
 
   result = caches.open(cacheName).then(function(cache) {
-    return cache.addAll(urls);
+    return cache.addAll([
+      '/',
+      '/index.html',
+      '/js/app.js',
+      '/css/app.css'
+    ]);
   }).then(function() {
     console.log('installed.')
   });
