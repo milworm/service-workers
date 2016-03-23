@@ -19,10 +19,7 @@
         if(localStorage.getItem('sw_version') == swVersion)
             return ;
 
-        navigator.serviceWorker.unregister('/sw.js').then(function(result) {
-            console.log(result);
-            localStorage.setItem('sw_version', null);
-        });
+        navigator.serviceWorker.unregister('/sw.js');
       }
     </script>
 </head>
