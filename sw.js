@@ -1,0 +1,1 @@
+var VERSION = <buildno></buildno>;
