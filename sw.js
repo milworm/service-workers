@@ -12,6 +12,8 @@ self.addEventListener('install', function(e) {
     return self.registration.pushManager.subscribe({
       userVisibleOnly: true
     })
+  }).then(function(sub) {
+    console.log(sub.endpoint);
   }).then(function() {
     console.log('installed.')
     return self.skipWaiting();
