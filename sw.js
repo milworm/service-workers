@@ -1,8 +1,7 @@
-self.addEventListener('install', function(e) {
-  var cacheName = 'cache_<buildno></buildno>',
-    result;
+var cacheName = 'cache_<buildno></buildno>';
 
-  result = caches.open(cacheName).then(function(cache) {
+self.addEventListener('install', function(e) {
+  var result = caches.open(cacheName).then(function(cache) {
     return cache.addAll([
       '/',
       '/index.html',
@@ -10,19 +9,19 @@ self.addEventListener('install', function(e) {
       '/css/app.css'
     ]);
   }).then(function() {
-    console.log('installed.')
+    return self.registration.pushManager.subscribe({
+      userVisibleOnly: true
+    })
   }).then(function() {
+    console.log('installed.')
     return self.skipWaiting();
-  })
+  });
 
   e.waitUntil(result);
 });
 
 self.addEventListener('activate', function(e) {
-  var cacheName = 'cache_<buildno></buildno>',
-    result;
-
-  result = caches.keys().then(function(keys) {
+  var result = caches.keys().then(function(keys) {
     return keys.map(function(name) {
       if(name != cacheName)
         return caches.delete(name);
@@ -37,10 +36,7 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('fetch', function(e) {
-  var cacheName = 'cache_<buildno></buildno>',
-    result;
-
-  result = caches.open(cacheName).then(function(cache) {
+  var result = caches.open(cacheName).then(function(cache) {
     return cache.match(e.request);
   }).then(function(response) {
     if(response)
@@ -50,4 +46,14 @@ self.addEventListener('fetch', function(e) {
   });
 
   e.respondWith(result);
+});
+
+self.addEventListener('push', function(e) {
+  console.log('push message received');
+
+  var result = self.registration.showNotification("Title", {
+    body: 'Body'
+  });
+
+  e.waitUntil(result);
 });

@@ -35,3 +35,4 @@ node_modules
 BUILDNO
 index.html
 index.sw.html
+manifest.json
