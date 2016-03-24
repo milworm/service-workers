@@ -2,14 +2,23 @@
 <head>
     <meta charset="UTF-8">
     <title>With Service Workers</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.json">
     
     <!-- <link rel="stylesheet" href="/css/app.css?build=<buildno></buildno>" />
     <script src="/js/app.js?build=<buildno></buildno>"></script> -->
     <link rel="stylesheet" href="/css/app.css" />
     <script src="/js/app.js"></script>
     <script>
-      navigator.serviceWorker.register('/sw.js');
+      navigator.serviceWorker.register('/sw.js')
+      .then(function(registration) {
+        return registration.pushManager.subscribe({
+          userVisibleOnly: true
+        });
+      })
+      .then(function(sub) {
+        // @TODO save this id on a backend to be able to send notifications.
+        console.log(sub.endpoint);
+      });
     </script>
 </head>
 <body>
