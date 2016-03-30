@@ -5,6 +5,7 @@ var gulp = require("gulp"),
 
 gulp.task("serve", ["js-start"], function() {
     browserSync({
+        port: 80,
         server: {
             baseDir: ['./']
         }
