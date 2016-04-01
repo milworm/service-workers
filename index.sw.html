@@ -16,8 +16,16 @@
         });
       })
       .then(function(sub) {
-        // @TODO save this id on a backend to be able to send notifications.
-        console.log(sub.endpoint);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/subscribe', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onstatechange = function() {
+          console.log(xhr.responseText);
+        }
+        xhr.send(JSON.stringify({
+          user_id: 1,
+          user_token: sub.endpoint.split('gcm/send/')[1]
+        }));
       });
     </script>
 </head>
