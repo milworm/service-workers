@@ -3,23 +3,32 @@ import redis
 import requests
 
 class Notification:
-    url = 'https://android.googleapis.com/gcm/send'
+    API_URL = 'https://android.googleapis.com/gcm/send'
+    API_KEY = 'AIzaSyDvHh4cmSFFraTrVLbNTnsyF7wMxRBAiXw'
 
-    def notify(self, token, data):
+    def __init__(self, data):
+        self.title = data['title']
+        self.message = data['message']
+
+    def notify(self, token):
         json = self.get_data(token)
         headers = self.get_headers()
-        result = requests.post(Notification.url, json=json, headers=headers)
+        result = requests.post(Notification.API_URL, json=json, headers=headers)
         print result.content
 
     def get_data(self, token):
         return {
-            'registration_ids': [token]
+            'registration_ids': [token],
+            'data': {
+                'title': self.title,
+                'message': self.message
+            }
         }
 
     def get_headers(self):
         return {
             'Content-Type': 'application/json', 
-            'Authorization': 'key=AIzaSyBO0C1B5xVs9Y9XeCPBSkSr1_BDing5XkY'
+            'Authorization': 'key={0}'.format(Notification.API_KEY)
         }
 
 class Application(object):
@@ -33,7 +42,7 @@ class Application(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def subscribe(self):
-        '''adds user to list of users how can receive push notifications'''
+        '''adds user to list of users who can receive push notifications'''
         data = cherrypy.request.json
         user_id = data['user_id']
         user_token = data['user_token']
@@ -55,7 +64,7 @@ class Application(object):
         user_id = data['user_id']
         key = self.get_key(user_id)
         token = self.db.get(key)
-        Notification().notify(token, data)
+        Notification(data).notify(token)
 
         return {
             'success': True
