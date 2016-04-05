@@ -4,7 +4,7 @@ import requests
 
 class Notification:
     API_URL = 'https://android.googleapis.com/gcm/send'
-    API_KEY = 'AIzaSyDvHh4cmSFFraTrVLbNTnsyF7wMxRBAiXw'
+    API_KEY = 'AIzaSyCdiN1gXE3_-fnsxpgRtnKB4sEX5SS0kmw'
 
     def __init__(self, data):
         self.title = data['title']
@@ -13,16 +13,19 @@ class Notification:
     def notify(self, token):
         json = self.get_data(token)
         headers = self.get_headers()
-        result = requests.post(Notification.API_URL, json=json, headers=headers)
-        print result.content
+        return requests.post(Notification.API_URL, json=json, headers=headers)
 
     def get_data(self, token):
-        return {
-            'registration_ids': [token],
+        '''
+            The first version of Push Notifications API doesnt support
+            sending title and message. 
             'data': {
                 'title': self.title,
                 'message': self.message
             }
+        '''
+        return {
+            'registration_ids': [token]
         }
 
     def get_headers(self):
@@ -36,7 +39,7 @@ class Application(object):
         self.db = redis.StrictRedis()
 
     def get_key(self, user_id):
-        return 'user:{0}'.format(user_id)
+        return 'push-notifications:user:{0}'.format(user_id)
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -75,8 +78,9 @@ class Application(object):
     @cherrypy.tools.json_out()
     def users(self):
         '''list of users'''
+        key = self.get_key('*')
         keys = []
-        for key in self.db.scan_iter('user:*'): 
+        for key in self.db.scan_iter(key):
             keys.append({
                 'key': key,
                 'value': self.db.get(key)

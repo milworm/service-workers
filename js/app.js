@@ -9,8 +9,8 @@ function notifyMe() {
     var xhr = new XMLHttpRequest(),
         data = JSON.stringify({
             user_id: 1,
-            title: 'Title',
-            message: 'Message'
+            title: 'Super title',
+            message: 'Super Message'
         });
 
     xhr.open('POST', '/api/notify', true);

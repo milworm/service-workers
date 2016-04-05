@@ -47,7 +47,7 @@ self.addEventListener('fetch', function(e) {
 self.addEventListener('push', function(e) {
   console.log('push message received');
 
-  var result = self.registration.showNotification("Title", {
+  var result = self.registration.showNotification('Title', {
     body: 'Body'
   });
 
