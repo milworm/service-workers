@@ -36,3 +36,4 @@ BUILDNO
 index.html
 index.sw.html
 manifest.json
+server/node_modules
