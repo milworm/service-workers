@@ -5,6 +5,7 @@ const GCM_API_KEY = 'AIzaSyCdiN1gXE3_-fnsxpgRtnKB4sEX5SS0kmw'
 const MESSAGE_CHANNEL = 'notifications'
 
 var koa = require('koa'),
+	co = require('co'),
 	request = require('co-request'),
 	router = require('koa-router')(),
 	coRedis = require('co-redis'),
@@ -18,7 +19,7 @@ var koa = require('koa'),
 
 redisClient = coRedis(redisClient)
 
-redisSubClient.on('message', function *(channel, message) {
+let onMessage = co.wrap(function *(channel, message) {
 	if(channel != MESSAGE_CHANNEL)
 		return 
 
@@ -26,14 +27,14 @@ redisSubClient.on('message', function *(channel, message) {
 	let userId = data.user_id
 	let body = data.body
 	let title = data.title
-	let userToken = yield redisClient.get(`notifications:users:${userId}`)
-
-	request({
+	let userToken = yield redisClient.get(`push-notifications:users:${userId}`)
+	let result = yield request({
 		url: GCM_API_URL,
+		method: 'POST',
 		json: true,
 		headers: {
 			'Content-Type': 'application/json',
-			'Authorization': 'key=${GCM_API_KEY}'
+			'Authorization': `key=${GCM_API_KEY}`
 		},
 		body: {
 			title: title,
@@ -41,8 +42,11 @@ redisSubClient.on('message', function *(channel, message) {
 			registration_ids: [userToken]
 		}
 	})
+
+	console.log(result)
 })
 
+redisSubClient.on('message', onMessage)
 redisSubClient.subscribe('notifications')
 
 /**
@@ -76,15 +80,20 @@ router.post('/subscribe', function *() {
 /**
  * method is used only for testing, notifies user by its id
  */
-router.post('/notify', function *() {
-	let ids = redisClient.keys('notifications:users:*')
-	let data = JSON.stringify({
-		user_id: ids[0],
-		title: 'Title goes here',
-		body: 'Message body goes here'
+router.get('/notify', function *() {
+	let keys = yield redisClient.keys('push-notifications:users:*')
+
+	keys.forEach((key) => {
+		let id = key.split('users:')[1]
+		let data = JSON.stringify({
+			user_id: id,
+			title: 'Title goes here',
+			body: 'Message body goes here'
+		})
+
+		redisPubClient.publish(MESSAGE_CHANNEL, data)
 	})
 
-	redisPubClient.publish(MESSAGE_CHANNEL, data)
 	this.body = {success: true}
 })
 
@@ -93,4 +102,4 @@ app.use(bodyParser())
 app.use(json())
 app.use(router.routes())
 
-app.listen(3004);
+app.listen(8081);
