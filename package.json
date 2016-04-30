@@ -12,6 +12,7 @@
   "devDependencies": {
     "browser-sync": "^2.11.2",
     "gulp": "^3.9.1",
-    "gulp-watch": "^4.3.5"
+    "gulp-watch": "^4.3.5",
+    "web-push-encryption": "^2.0.0"
   }
 }

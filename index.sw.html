@@ -22,9 +22,10 @@
         xhr.onstatechange = function() {
           console.log(xhr.responseText);
         }
+
         xhr.send(JSON.stringify({
           user_id: 1,
-          user_token: sub.endpoint.split('gcm/send/')[1]
+          subscription: sub.toJSON()
         }));
       });
     </script>
